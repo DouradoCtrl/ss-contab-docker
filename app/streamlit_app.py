@@ -5,7 +5,8 @@ import pandas as pd
 import streamlit as st
 
 pages = [
-    st.Page("pages/home.py", title="Home"),
+    st.Page("pages/home.py", title="Início"),
+    st.Page("pages/dashboard.py", title="Painel"),
 ]
 
 pg = st.navigation(pages, position="sidebar")
