@@ -7,7 +7,7 @@ df = conn.query('SELECT * FROM clientes;', ttl=0)
 st.title("Clientes")
 st.write("Veja, cadastre, edite e exclua clientes.")
 
-# Função para editar cliente
+# Card editar cliente
 @st.dialog("Editar Cliente")
 def editar_cliente(row):
     nome = st.text_input("Nome", value=row["nome"])
@@ -22,7 +22,7 @@ def editar_cliente(row):
         st.success("Cliente atualizado com sucesso!")
         st.rerun()
 
-# Botão para adicionar novo cliente
+# Card adicionar cliente
 @st.dialog("Adicionar Cliente")
 def adicionar_cliente():
     nome = st.text_input("Nome")
@@ -40,7 +40,7 @@ def adicionar_cliente():
         else:
             st.error("Preencha todos os campos.")
 
-# Função para confirmar exclusão
+# Card p/ excluir cliente
 @st.dialog("Confirmar Exclusão")
 def confirmar_exclusao(row):
     st.warning(f"Tem certeza que deseja excluir o cliente '{row['nome']}'? Esta ação não pode ser desfeita e todos os dados associados serão perdidos.")
@@ -54,7 +54,7 @@ def confirmar_exclusao(row):
         st.success("Cliente excluído com sucesso!")
         st.rerun()
 
-# Exibe cada cliente em um bloco expansível (dropdown)
+# Dropdown cliente
 for idx, row in df.iterrows():
     with st.expander(f"{row['nome']} - {row['empreendimento']}"):
         st.write(f"Criado em: {row['criado_em']}")
