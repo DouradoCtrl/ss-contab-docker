@@ -12,7 +12,7 @@ st.write("Veja, cadastre, edite e exclua clientes.")
 def editar_cliente(row):
     nome = st.text_input("Nome", value=row["nome"])
     empreendimento = st.text_input("Empreendimento", value=row["empreendimento"])
-    if st.button("Salvar"):
+    if st.button("Salvar", type="primary"):
         with conn.session as s:
             s.execute(
                 text("UPDATE clientes SET nome=:nome, empreendimento=:empreendimento WHERE id=:id"),
@@ -27,7 +27,7 @@ def editar_cliente(row):
 def adicionar_cliente():
     nome = st.text_input("Nome")
     empreendimento = st.text_input("Empreendimento")
-    if st.button("Salvar"):
+    if st.button("Salvar", type="primary"):
         if nome and empreendimento:
             with conn.session as s:
                 s.execute(
