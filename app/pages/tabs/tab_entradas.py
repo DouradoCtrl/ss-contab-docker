@@ -34,7 +34,7 @@ def render(filtros, conn):
 
     # botões de ação
     if filtros['cliente'] != "Todos":
-        col1, col2, col3 = st.columns([1, 1, 4])
+        col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
         
         with col1:
             if st.button("Adicionar", type="primary"):
@@ -64,66 +64,92 @@ def render(filtros, conn):
                 adicionar_entrada()
         
         with col2:
-            if st.button("Opções"):
-                @st.dialog("Excluir ou Editar Entrada")
-                def editar_excluir_entrada():
-                    if df.empty:
-                        st.warning("Nenhuma entrada encontrada para editar.")
-                        return
-                    
-                    # Criar lista de opções para o selectbox
-                    entradas = []
-                    for _, row in df.iterrows():
-                        label = f"{row['nome']} - {row['categoria']} - {row['data_entrada']}"
-                        entradas.append((label, row))
-                    
-                    # Selectbox para escolher a entrada
-                    entrada_selecionada = st.selectbox(
-                        "Selecione a entrada",
-                        options=entradas,
-                        format_func=lambda x: x[0]
-                    )
-                    
-                    if entrada_selecionada:
-                        _, entrada = entrada_selecionada
+            if st.button("Editar"):
+                @st.dialog("Editar Entrada")
+                def editar_entrada():
+                        if df.empty:
+                            st.warning("Nenhuma entrada encontrada para editar.")
+                            return
                         
-                        # Campos preenchidos com os dados da entrada selecionada
-                        nome = st.text_input("Nome da Entrada", value=str(entrada['nome']) if not pd.isna(entrada['nome']) else "")
-                        categoria = st.text_input("Categoria", value=str(entrada['categoria']) if not pd.isna(entrada['categoria']) else "")
-                        valor = st.number_input("Valor", min_value=0.0, format="%.2f", value=float(entrada['valor']) if not pd.isna(entrada['valor']) else 0.0)
-                        banco_origem = st.text_input("Banco de Origem", value=str(entrada['banco_origem']) if 'banco_origem' in entrada and not pd.isna(entrada['banco_origem']) else "")
-                        data_entrada = st.date_input("Data de Entrada", value=pd.to_datetime(entrada['data_entrada']) if not pd.isna(entrada['data_entrada']) else pd.to_datetime("today"))
+                        # Criar lista de opções para o selectbox
+                        entradas = []
+                        for _, row in df.iterrows():
+                            label = f"{row['nome']} - {row['categoria']} - {row['data_entrada']}"
+                            entradas.append((label, row))
                         
-                        # Botões de ação
-                        col_salvar, col_cancelar, col_excluir = st.columns(3)
+                        # Selectbox para escolher a entrada
+                        entrada_selecionada = st.selectbox(
+                            "Selecione a entrada",
+                            options=entradas,
+                            format_func=lambda x: x[0]
+                        )
                         
-                        with col_salvar:
-                            if st.button("Salvar alterações", type="primary"):
-                                with conn.session as s:
-                                    s.execute(
-                                        text("UPDATE entradas SET nome=:nome, categoria=:categoria, valor=:valor, banco_origem=:banco_origem, data_entrada=:data_entrada WHERE id=:id"),
-                                        {"nome": nome, "categoria": categoria, "valor": valor, "banco_origem": banco_origem, "data_entrada": data_entrada, "id": entrada['id']}
-                                    )
-                                    s.commit()
-                                st.success("Entrada atualizada com sucesso!")
-                                st.rerun()
+                        if entrada_selecionada:
+                            _, entrada = entrada_selecionada
+                            
+                            # Campos preenchidos com os dados da entrada selecionada
+                            nome = st.text_input("Nome da Entrada", value=str(entrada['nome']) if not pd.isna(entrada['nome']) else "")
+                            categoria = st.text_input("Categoria", value=str(entrada['categoria']) if not pd.isna(entrada['categoria']) else "")
+                            valor = st.number_input("Valor", min_value=0.0, format="%.2f", value=float(entrada['valor']) if not pd.isna(entrada['valor']) and not isinstance(entrada['valor'], pd.Series) else 0.0)
+                            banco_origem = st.text_input("Banco de Origem", value=str(entrada['banco_origem']) if 'banco_origem' in entrada and not pd.isna(entrada['banco_origem']) and not isinstance(entrada['banco_origem'], pd.Series) else "")
+                            data_entrada = st.date_input("Data de Entrada", value=pd.to_datetime(entrada['data_entrada']) if not pd.isna(entrada['data_entrada']) and not isinstance(entrada['data_entrada'], pd.Series) else pd.to_datetime("today"))
+                            
+                            # Botões de ação
+                            col_salvar, col_cancelar = st.columns(2)
+                            
+                            with col_salvar:
+                                if st.button("Salvar alterações", type="primary"):
+                                    with conn.session as s:
+                                        s.execute(
+                                            text("UPDATE entradas SET nome=:nome, categoria=:categoria, valor=:valor, banco_origem=:banco_origem, data_entrada=:data_entrada WHERE id=:id"),
+                                            {"nome": nome, "categoria": categoria, "valor": valor, "banco_origem": banco_origem, "data_entrada": data_entrada, "id": entrada['id']}
+                                        )
+                                        s.commit()
+                                    st.success("Entrada atualizada com sucesso!")
+                                    st.rerun()
+                            
+                            with col_cancelar:
+                                if st.button("Cancelar"):
+                                    st.rerun()
+                
+                editar_entrada()
+        
+        with col3:
+            if st.button("Excluir"):
+                @st.dialog("Excluir Entrada")
+                def excluir_entrada():
+                        if df.empty:
+                            st.warning("Nenhuma entrada encontrada para excluir.")
+                            return
                         
-                        with col_cancelar:
-                            if st.button("Cancelar", type="secondary"):
-                                st.rerun()
+                        # Criar lista de opções para o selectbox
+                        entradas = []
+                        for _, row in df.iterrows():
+                            label = f"{row['nome']} - {row['categoria']} - {row['data_entrada']}"
+                            entradas.append((label, row))
                         
-                        with col_excluir:
-                            if st.button("Excluir registro", type="secondary"):
+                        # Selectbox para escolher a entrada
+                        entrada_selecionada = st.selectbox(
+                            "Selecione a entrada para excluir",
+                            options=entradas,
+                            format_func=lambda x: x[0]
+                        )
+                        
+                        if entrada_selecionada:
+                            _, entrada = entrada_selecionada
+                            
+                            st.warning(f"Tem certeza que deseja excluir: {entrada['nome']}?")
+                            
+                            if st.button("Confirmar Exclusão", type="primary"):
                                 with conn.session as s:
                                     s.execute(
                                         text("DELETE FROM entradas WHERE id=:id"),
                                         {"id": entrada['id']}
                                     )
                                     s.commit()
-                                st.success("Entrada excluída com sucesso!")
                                 st.rerun()
                 
-                editar_excluir_entrada()
+                excluir_entrada()
 
         
     if filtros['cliente'] == "Todos":
