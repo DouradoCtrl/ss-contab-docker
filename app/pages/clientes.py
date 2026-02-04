@@ -7,8 +7,22 @@ df = conn.query('SELECT * FROM clientes;', ttl=0)
 st.title("Clientes")
 st.write("Veja, cadastre, edite e exclua clientes.")
 
-# st.dataframe(df)
+# Função para editar cliente
+@st.dialog("Editar Cliente")
+def editar_cliente(row):
+    nome = st.text_input("Nome", value=row["nome"])
+    empreendimento = st.text_input("Empreendimento", value=row["empreendimento"])
+    if st.button("Salvar"):
+        with conn.session as s:
+            s.execute(
+                text("UPDATE clientes SET nome=:nome, empreendimento=:empreendimento WHERE id=:id"),
+                {"nome": nome, "empreendimento": empreendimento, "id": row["id"]}
+            )
+            s.commit()
+        st.success("Cliente atualizado com sucesso!")
+        st.rerun()
 
+# Botão para adicionar novo cliente
 @st.dialog("Adicionar Cliente")
 def adicionar_cliente():
     nome = st.text_input("Nome")
@@ -26,27 +40,22 @@ def adicionar_cliente():
         else:
             st.error("Preencha todos os campos.")
 
-if st.button("Adicionar"):
-    adicionar_cliente()
-
-@st.dialog("Editar Cliente")
-def editar_cliente(row):
-    nome = st.text_input("Nome", value=row["nome"])
-    empreendimento = st.text_input("Empreendimento", value=row["empreendimento"])
-    if st.button("Salvar"):
-        with conn.session as s:
-            s.execute(
-                text("UPDATE clientes SET nome=:nome, empreendimento=:empreendimento WHERE id=:id"),
-                {"nome": nome, "empreendimento": empreendimento, "id": row["id"]}
-            )
-            s.commit()
-        st.success("Cliente atualizado com sucesso!")
-        st.rerun()
-
+# Exibe cada cliente em um bloco expansível (dropdown)
 for idx, row in df.iterrows():
-    cols = st.columns((3, 3, 2, 2))
-    cols[0].write(row["nome"])
-    cols[1].write(row["empreendimento"])
-    cols[2].write(row["criado_em"])
-    if cols[3].button("Editar", key=f"edit_{row['id']}"):
-        editar_cliente(row)
+    with st.expander(f"{row['nome']} - {row['empreendimento']}"):
+        st.write(f"Criado em: {row['criado_em']}")
+        col1, col2, _ = st.columns([1,1,6])
+        if col1.button("Editar", key=f"edit_{row['id']}"):
+            editar_cliente(row)
+        if col2.button("Excluir", key=f"delete_{row['id']}"):
+            with conn.session as s:
+                s.execute(
+                    text("DELETE FROM clientes WHERE id=:id"),
+                    {"id": row["id"]}
+                )
+                s.commit()
+            st.success("Cliente excluído com sucesso!")
+            st.rerun()
+
+if st.button("Adicionar Cliente"):
+    adicionar_cliente()
