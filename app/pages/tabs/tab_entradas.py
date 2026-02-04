@@ -34,7 +34,7 @@ def render(filtros, conn):
 
     # botões de ação
     if filtros['cliente'] != "Todos":
-        col1, col2 = st.columns(2)
+        col1, col2, col3 = st.columns([1, 1, 4])
         
         with col1:
             if st.button("Adicionar", type="primary"):
@@ -64,7 +64,7 @@ def render(filtros, conn):
                 adicionar_entrada()
         
         with col2:
-            if st.button("Mais opções"):
+            if st.button("Opções"):
                 @st.dialog("Excluir ou Editar Entrada")
                 def editar_excluir_entrada():
                     if df.empty:
