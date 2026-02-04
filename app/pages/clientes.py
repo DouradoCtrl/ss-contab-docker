@@ -58,7 +58,7 @@ def confirmar_exclusao(row):
 for idx, row in df.iterrows():
     with st.expander(f"{row['nome']} - {row['empreendimento']}"):
         st.write(f"Criado em: {row['criado_em']}")
-        col1, col2, _ = st.columns([1,1,6])
+        _, col1, col2 = st.columns([6,1,1])
         if col1.button("Editar", key=f"edit_{row['id']}"):
             editar_cliente(row)
         if col2.button("Excluir", key=f"delete_{row['id']}"):
