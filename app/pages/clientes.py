@@ -2,7 +2,7 @@ import streamlit as st
 from sqlalchemy import text
 
 conn = st.connection("postgresql", type="sql")
-df = conn.query('SELECT * FROM clientes;', ttl="10m")
+df = conn.query('SELECT * FROM clientes;', ttl=0)
 
 st.title("Clientes")
 st.write("Veja, cadastre, edite e exclua clientes.")
