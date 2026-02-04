@@ -40,6 +40,20 @@ def adicionar_cliente():
         else:
             st.error("Preencha todos os campos.")
 
+# Função para confirmar exclusão
+@st.dialog("Confirmar Exclusão")
+def confirmar_exclusao(row):
+    st.warning(f"Tem certeza que deseja excluir o cliente '{row['nome']}'? Esta ação não pode ser desfeita e todos os dados associados serão perdidos.")
+    if st.button("Confirmar Exclusão", key=f"confirm_{row['id']}"):
+        with conn.session as s:
+            s.execute(
+                text("DELETE FROM clientes WHERE id=:id"),
+                {"id": row["id"]}
+            )
+            s.commit()
+        st.success("Cliente excluído com sucesso!")
+        st.rerun()
+
 # Exibe cada cliente em um bloco expansível (dropdown)
 for idx, row in df.iterrows():
     with st.expander(f"{row['nome']} - {row['empreendimento']}"):
@@ -48,14 +62,7 @@ for idx, row in df.iterrows():
         if col1.button("Editar", key=f"edit_{row['id']}"):
             editar_cliente(row)
         if col2.button("Excluir", key=f"delete_{row['id']}"):
-            with conn.session as s:
-                s.execute(
-                    text("DELETE FROM clientes WHERE id=:id"),
-                    {"id": row["id"]}
-                )
-                s.commit()
-            st.success("Cliente excluído com sucesso!")
-            st.rerun()
+            confirmar_exclusao(row)
 
 if st.button("Adicionar Cliente"):
     adicionar_cliente()
