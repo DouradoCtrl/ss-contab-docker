@@ -17,5 +17,5 @@ tab_entrada, tab_saida, tab_gastos_fixos = st.tabs([
 ])
 
 with tab_entrada:
-    tab_entradas.render(filtros)
+    tab_entradas.render(filtros, conn)
     
