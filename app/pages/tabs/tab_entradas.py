@@ -88,11 +88,11 @@ def render(filtros, conn):
                         _, entrada = entrada_selecionada
                         
                         # Campos preenchidos com os dados da entrada selecionada
-                        nome = st.text_input("Nome da Entrada", value=entrada['nome'])
-                        categoria = st.text_input("Categoria", value=entrada['categoria'])
-                        valor = st.number_input("Valor", min_value=0.0, format="%.2f", value=float(entrada['valor']) if 'valor' in entrada and entrada['valor'] is not None else 0.0)
-                        banco_origem = st.text_input("Banco de Origem", value=entrada['banco_origem'] if 'banco_origem' in entrada else "")
-                        data_entrada = st.date_input("Data de Entrada", value=entrada['data_entrada'])
+                        nome = st.text_input("Nome da Entrada", value=str(entrada['nome']) if not pd.isna(entrada['nome']) else "")
+                        categoria = st.text_input("Categoria", value=str(entrada['categoria']) if not pd.isna(entrada['categoria']) else "")
+                        valor = st.number_input("Valor", min_value=0.0, format="%.2f", value=float(entrada['valor']) if not pd.isna(entrada['valor']) else 0.0)
+                        banco_origem = st.text_input("Banco de Origem", value=str(entrada['banco_origem']) if 'banco_origem' in entrada and not pd.isna(entrada['banco_origem']) else "")
+                        data_entrada = st.date_input("Data de Entrada", value=pd.to_datetime(entrada['data_entrada']) if not pd.isna(entrada['data_entrada']) else pd.to_datetime("today"))
                         
                         # Botões de ação
                         col_salvar, col_cancelar, col_excluir = st.columns(3)
@@ -109,7 +109,7 @@ def render(filtros, conn):
                                 st.rerun()
                         
                         with col_cancelar:
-                            if st.button("Cancelar"):
+                            if st.button("Cancelar", type="secondary"):
                                 st.rerun()
                         
                         with col_excluir:
