@@ -7,6 +7,7 @@ def render(filtros, conn):
     query = "SELECT * FROM entradas WHERE 1=1"
     params = {}
 
+    # query para pesquisar por filtros
     if filtros['cliente_id']:
         query += " AND cliente_id = :cliente_id"
         params["cliente_id"] = filtros['cliente_id']
@@ -30,6 +31,8 @@ def render(filtros, conn):
         result = s.execute(text(query), params)
         df = pd.DataFrame(result.fetchall(), columns=result.keys())
 
+
+    # botão de adicionar entrada
     if filtros['cliente'] != "Todos":
         if st.button("Adicionar", type="primary"):
             @st.dialog("Adicionar Entrada")
