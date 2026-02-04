@@ -57,3 +57,7 @@ O tema da aplicação pode ser ajustado no arquivo `app/.streamlit/config.toml`.
 
 ## Licença
 Este projeto está licenciado sob os termos da licença MIT.
+
+# Usabilidade
+> bash
+docker exec -it <nome_ou_id_container> psql -U streamlit -d streamlit_db
