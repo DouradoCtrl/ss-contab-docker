@@ -64,5 +64,5 @@ for idx, row in df.iterrows():
         if col2.button("Excluir", key=f"delete_{row['id']}"):
             confirmar_exclusao(row)
 
-if st.button("Adicionar Cliente"):
+if st.button("Adicionar"):
     adicionar_cliente()
