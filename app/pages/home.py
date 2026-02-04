@@ -1,4 +1,4 @@
 import streamlit as st
 
-st.title("Minha Página")
+st.title("MEI FINANCE")
 st.write("Conteúdo da página aqui.")
