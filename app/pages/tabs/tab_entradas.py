@@ -59,4 +59,7 @@ def render(filtros, conn):
             adicionar_entrada()
 
         
-    st.dataframe(df)
+    if filtros['cliente'] == "Todos":
+        st.info("Escolha um cliente para exibir.")
+    else:
+        st.dataframe(df)
