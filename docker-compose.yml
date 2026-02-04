@@ -11,7 +11,7 @@ services:
   adminer:
         image: adminer
         ports:
-            - 9090:8080
+            - 9191:8080
         depends_on:
         - db
         
